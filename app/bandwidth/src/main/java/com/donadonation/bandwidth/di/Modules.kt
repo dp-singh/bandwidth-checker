@@ -2,10 +2,11 @@ package com.donadonation.bandwidth.di
 
 import android.app.Application
 import androidx.room.Room
-import com.donadonation.bandwidth.BandwidthViewModel
+
 import com.donadonation.bandwidth.local.BandwidthDao
 import com.donadonation.bandwidth.local.BandwidthDatabase
 import com.donadonation.bandwidth.local.METRIC_TABLE
+import com.donadonation.bandwidth.ui.BandwidthViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -14,7 +15,6 @@ val appModule = module{
 
     viewModel{
         BandwidthViewModel()
-
     }
 }
 

@@ -1,4 +1,4 @@
-package com.donadonation.bandwidth
+package com.donadonation.bandwidth.ui
 
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel

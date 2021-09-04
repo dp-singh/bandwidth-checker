@@ -1,9 +1,9 @@
-package com.donadonation.bandwidth
+package com.donadonation.bandwidth.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
+import com.donadonation.bandwidth.R
 import com.donadonation.bandwidth.databinding.ActivityBandwidthBinding
 import com.donadonation.bandwidth.di.appModule
 import com.donadonation.bandwidth.di.dbModule

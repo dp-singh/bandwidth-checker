@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DonaDonation">
         <activity
-            android:name=".BandwidthActivity"
+            android:name=".ui.BandwidthActivity"
             android:exported="true"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
