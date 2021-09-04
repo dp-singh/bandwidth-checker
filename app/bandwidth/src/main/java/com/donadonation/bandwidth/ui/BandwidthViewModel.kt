@@ -13,14 +13,11 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
 
     val bitRateObservableField: ObservableField<String> = ObservableField()
 
-
     fun startSampling() {
         viewModelScope.launch {
             repository.startSampling(null, null)
                 .collect {  }
         }
     }
-
-
 
 }

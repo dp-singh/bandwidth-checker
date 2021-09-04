@@ -6,7 +6,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface BandwidthRepository {
 
-    suspend fun startSampling(duration: Long?, interval: Long?): Flow<Result<Long>>
+    suspend fun startSampling(duration: Long?, interval: Long?): Flow<Pair<Result<Long>,Result<Long>>>
+
+    suspend fun downloadReport(duration: Long?, interval: Long?): Flow<Result<Long>>
+
+    suspend fun uploadReport(duration: Long?, interval: Long?): Flow<Result<Long>>
 
     suspend fun saveReport(report: Report): Long
 
