@@ -6,6 +6,9 @@ import androidx.room.Room
 import com.donadonation.bandwidth.local.BandwidthDao
 import com.donadonation.bandwidth.local.BandwidthDatabase
 import com.donadonation.bandwidth.local.METRIC_TABLE
+import com.donadonation.bandwidth.repository.BandwidthRepository
+import com.donadonation.bandwidth.repository.BandwidthRepositoryImpl
+import com.donadonation.bandwidth.repository.Transform
 import com.donadonation.bandwidth.ui.BandwidthViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -14,8 +17,17 @@ import org.koin.dsl.module
 val appModule = module{
 
     viewModel{
-        BandwidthViewModel()
+        BandwidthViewModel(get())
     }
+}
+
+val repositoryModule = module{
+
+    fun providesBandwidthRepository(dao: BandwidthDao, mapper: Transform):BandwidthRepository{
+        return BandwidthRepositoryImpl(dao, mapper)
+    }
+    single { providesBandwidthRepository(get(), Transform) }
+
 }
 
 val dbModule = module {

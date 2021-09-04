@@ -6,8 +6,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Report::class],
-    version = 1,
-    exportSchema = false
+    version = 1
 )
 @TypeConverters(Converter::class)
 abstract class BandwidthDatabase : RoomDatabase() {

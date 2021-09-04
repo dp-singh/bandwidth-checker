@@ -7,6 +7,7 @@ import com.donadonation.bandwidth.R
 import com.donadonation.bandwidth.databinding.ActivityBandwidthBinding
 import com.donadonation.bandwidth.di.appModule
 import com.donadonation.bandwidth.di.dbModule
+import com.donadonation.bandwidth.di.repositoryModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,7 +30,11 @@ class BandwidthActivity : AppCompatActivity() {
                 startKoin {
                     androidLogger()
                     androidContext(this@BandwidthActivity.applicationContext)
-                    modules(appModule, dbModule)
+                    modules(
+                        appModule,
+                        dbModule,
+                        repositoryModule
+                    )
                 }
             }
     }
