@@ -10,8 +10,10 @@ import com.donadonation.bandwidth.repository.BandwidthRepository
 import com.donadonation.bandwidth.repository.BandwidthRepositoryImpl
 import com.donadonation.bandwidth.repository.Transform
 import com.donadonation.bandwidth.ui.BandwidthViewModel
+import com.donadonation.bandwidth.worker.BandwidthWorker
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.workmanager.dsl.worker
 import org.koin.dsl.module
 
 val appModule = module{
@@ -44,4 +46,8 @@ val dbModule = module {
 
     single { provideDatabase(androidApplication()) }
     single { providesBandwidthDao(get()) }
+}
+
+val workerModule = module {
+    worker { BandwidthWorker(get(), get(), get()) }
 }

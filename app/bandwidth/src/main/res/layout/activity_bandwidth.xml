@@ -14,29 +14,5 @@
         android:layout_height="match_parent"
         tools:context=".ui.BandwidthActivity">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/startDownload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start"
-            android:onClick="@{()->viewModel.startSampling()}"
-            android:textAllCaps="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_rate"
-            style="?textAppearanceHeadline5"
-            android:text="@{viewModel.bitRateObservableField}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_16dp"
-            app:layout_constraintBottom_toTopOf="@id/startDownload"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="@tools:sample/lorem" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
