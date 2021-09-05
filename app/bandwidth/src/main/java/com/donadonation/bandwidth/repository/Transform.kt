@@ -6,10 +6,10 @@ import fr.bmartel.speedtest.model.SpeedTestMode
 
 object Transform {
 
-    fun map(speedTestReport: SpeedTestReport): Report {
+    fun map(speedTestReport: SpeedTestReport, startTime: Long): Report {
         return Report(
             0,
-            speedTestReport.startTime,
+            startTime,
             0,
             speedTestReport.totalPacketSize,
             speedTestReport.transferRateBit,

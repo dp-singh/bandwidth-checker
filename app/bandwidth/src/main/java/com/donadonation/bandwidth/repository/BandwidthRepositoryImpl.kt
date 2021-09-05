@@ -24,10 +24,12 @@ class BandwidthRepositoryImpl constructor(
         duration: Long?,
         interval: Long?
     ): Flow<Pair<Result<Long>, Result<Long>>> {
-        return downloadReport(duration, interval).zip(
+        val startTime = System.currentTimeMillis()
+        return downloadReport(duration, interval, startTime).zip(
             uploadReport(
                 duration,
-                interval
+                interval,
+                startTime
             )
         ) { downloadReport, uploadReport ->
             Pair(downloadReport, uploadReport)
@@ -37,14 +39,15 @@ class BandwidthRepositoryImpl constructor(
     @ExperimentalCoroutinesApi
     override suspend fun downloadReport(
         duration: Long?,
-        interval: Long?
+        interval: Long?,
+        startTime:Long
     ): Flow<Result<Long>> {
         return callbackFlow<Result<Long>> {
             val speedTestSocket = SpeedTestSocket()
             val listener = object : ISpeedTestListener {
                 override fun onCompletion(report: SpeedTestReport?) {
                     report?.apply {
-                        val value = bandwidthDao.insertReport(mapper.map(this))
+                        val value = bandwidthDao.insertReport(mapper.map(this, startTime))
                         trySend(Result.success(value))
                     } ?: kotlin.run {
                         trySend((Result.failure(Exception(SpeedTestError.CONNECTION_ERROR.name))))
@@ -72,14 +75,15 @@ class BandwidthRepositoryImpl constructor(
     @ExperimentalCoroutinesApi
     override suspend fun uploadReport(
         duration: Long?,
-        interval: Long?
+        interval: Long?,
+        startTime:Long
     ): Flow<Result<Long>> {
         return callbackFlow<Result<Long>> {
             val speedTestSocket = SpeedTestSocket()
             val listener = object : ISpeedTestListener {
                 override fun onCompletion(report: SpeedTestReport?) {
                     report?.apply {
-                        val value = bandwidthDao.insertReport(mapper.map(this))
+                        val value = bandwidthDao.insertReport(mapper.map(this,startTime))
                         trySend(Result.success(value))
                     } ?: kotlin.run {
                         trySend((Result.failure(Exception(SpeedTestError.CONNECTION_ERROR.name))))
