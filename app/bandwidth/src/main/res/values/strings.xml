@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">bandwidth</string>
     <string name="start">Start</string>
+    <string name="view">View</string>
 </resources>

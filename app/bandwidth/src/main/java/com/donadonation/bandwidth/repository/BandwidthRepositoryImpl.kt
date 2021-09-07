@@ -1,7 +1,15 @@
 package com.donadonation.bandwidth.repository
 
+import android.graphics.Color
+import com.donadonation.bandwidth.extension.formatToViewTimeDefaults
+import com.donadonation.bandwidth.extension.toMbps
 import com.donadonation.bandwidth.local.BandwidthDao
 import com.donadonation.bandwidth.local.Report
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import fr.bmartel.speedtest.SpeedTestReport
 import fr.bmartel.speedtest.SpeedTestSocket
 import fr.bmartel.speedtest.inter.ISpeedTestListener
@@ -13,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.zip
+import java.util.*
 
 class BandwidthRepositoryImpl constructor(
     private val bandwidthDao: BandwidthDao,
@@ -114,5 +123,37 @@ class BandwidthRepositoryImpl constructor(
 
     override suspend fun getReport(): List<Report> {
         return bandwidthDao.getAllEntries()
+    }
+
+    override suspend fun getYAxisValue(report: List<Report>): LineData {
+        val downloadReport: List<Entry> = collectList(report, true)
+        val uploadReport: List<Entry> = collectList(report, false)
+        val downloadLine = LineDataSet(downloadReport, "Download")
+        downloadLine.axisDependency = YAxis.AxisDependency.LEFT
+        val uploadLine = LineDataSet(uploadReport, "Upload")
+        uploadLine.axisDependency = YAxis.AxisDependency.LEFT
+        uploadLine.color = Color.RED
+        val finalReport = mutableListOf<ILineDataSet>()
+        finalReport.add(downloadLine)
+        finalReport.add(uploadLine)
+        return LineData(finalReport)
+    }
+
+    private fun collectList(report: List<Report>, isDownload: Boolean) = report
+        .sortedBy { it.startTime }
+        .filter { item -> item.isDownload == isDownload }
+        .map {
+            Entry(
+                it.startTime.toFloat(),
+                it.bitrate.toMbps()
+            )
+        }.toList()
+
+    override suspend fun getXAxisValue(report: List<Report>): List<String> {
+        return report
+            .sortedBy { it.startTime }
+            .map {
+                Date(it.startTime).formatToViewTimeDefaults()
+            }
     }
 }

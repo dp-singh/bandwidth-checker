@@ -88,4 +88,7 @@ dependencies {
 
     // Speed tester
     implementation 'fr.bmartel:jspeedtest:1.32.1'
+
+    //MP Android chart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }

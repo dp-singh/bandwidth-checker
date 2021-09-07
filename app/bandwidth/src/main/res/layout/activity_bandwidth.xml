@@ -2,6 +2,7 @@
 <layout>
 
     <data>
+
         <variable
             name="viewModel"
             type="com.donadonation.bandwidth.ui.BandwidthViewModel" />
@@ -13,6 +14,27 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.BandwidthActivity">
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_0dp"
+            app:layout_constraintDimensionRatio="w,3:4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/view"
+            android:textAllCaps="false"
+            android:onClick="@{()->viewModel.prepareChartData()}"
+            style="?materialButtonOutlinedStyle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line_chart_view" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
