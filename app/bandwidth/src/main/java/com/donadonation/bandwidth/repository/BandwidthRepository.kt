@@ -1,10 +1,7 @@
 package com.donadonation.bandwidth.repository
 
+import com.anychart.data.Mapping
 import com.donadonation.bandwidth.local.Report
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.interfaces.datasets.IDataSet
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
-import fr.bmartel.speedtest.SpeedTestReport
 import kotlinx.coroutines.flow.Flow
 
 interface BandwidthRepository {
@@ -19,7 +16,5 @@ interface BandwidthRepository {
 
     suspend fun getReport(): List<Report>
 
-    suspend fun getYAxisValue(report: List<Report>): LineData
-
-    suspend fun getXAxisValue(report: List<Report>): List<String>
+    suspend fun getChartData(report: List<Report>): List<Mapping>
 }

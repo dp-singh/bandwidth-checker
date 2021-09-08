@@ -1,15 +1,15 @@
 package com.donadonation.bandwidth.repository
 
-import android.graphics.Color
+import com.anychart.chart.common.dataentry.DataEntry
+import com.anychart.data.Mapping
+import com.anychart.data.Set
+import com.donadonation.bandwidth.entites.DisplayData
+import com.donadonation.bandwidth.entites.LineData
 import com.donadonation.bandwidth.extension.formatToViewTimeDefaults
+import com.donadonation.bandwidth.extension.orZero
 import com.donadonation.bandwidth.extension.toMbps
 import com.donadonation.bandwidth.local.BandwidthDao
 import com.donadonation.bandwidth.local.Report
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import fr.bmartel.speedtest.SpeedTestReport
 import fr.bmartel.speedtest.SpeedTestSocket
 import fr.bmartel.speedtest.inter.ISpeedTestListener
@@ -125,35 +125,43 @@ class BandwidthRepositoryImpl constructor(
         return bandwidthDao.getAllEntries()
     }
 
-    override suspend fun getYAxisValue(report: List<Report>): LineData {
-        val downloadReport: List<Entry> = collectList(report, true)
-        val uploadReport: List<Entry> = collectList(report, false)
-        val downloadLine = LineDataSet(downloadReport, "Download")
-        downloadLine.axisDependency = YAxis.AxisDependency.LEFT
-        val uploadLine = LineDataSet(uploadReport, "Upload")
-        uploadLine.axisDependency = YAxis.AxisDependency.LEFT
-        uploadLine.color = Color.RED
-        val finalReport = mutableListOf<ILineDataSet>()
-        finalReport.add(downloadLine)
-        finalReport.add(uploadLine)
-        return LineData(finalReport)
-    }
-
-    private fun collectList(report: List<Report>, isDownload: Boolean) = report
-        .sortedBy { it.startTime }
-        .filter { item -> item.isDownload == isDownload }
-        .map {
-            Entry(
-                it.startTime.toFloat(),
-                it.bitrate.toMbps()
-            )
-        }.toList()
-
-    override suspend fun getXAxisValue(report: List<Report>): List<String> {
-        return report
-            .sortedBy { it.startTime }
+    override suspend fun getChartData(report: List<Report>): List<Mapping> {
+        val downloadData = collectList(report, true)
+        val uploadData = collectList(report, false)
+        val seriesData: List<DataEntry> = xAxisEntries(report)
             .map {
-                Date(it.startTime).formatToViewTimeDefaults()
+                val downloadBitRate =
+                    downloadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
+                val uploadBitRate =
+                    uploadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
+                LineData(
+                    Date(it).formatToViewTimeDefaults(),
+                    downloadBitRate,
+                    uploadBitRate
+                )
             }
+        val set = Set.instantiate()
+        set.data(seriesData)
+        val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
+        val series2Mapping = set.mapAs("{ x: 'x', value: 'value2' }")
+        return listOf<Mapping>(series1Mapping, series2Mapping)
     }
+
+    private fun xAxisEntries(report: List<Report>): List<Long> =
+        report.distinctBy { it.startTime }
+            .toList()
+            .sortedBy { it.startTime }
+            .map { it.startTime }
+
+
+    private fun collectList(report: List<Report>, isDownload: Boolean): List<DisplayData> =
+        report
+            .filter { item -> item.isDownload == isDownload }
+            .map {
+                DisplayData(
+                    it.startTime,
+                    it.bitrate.toMbps()
+                )
+            }.toList()
+
 }

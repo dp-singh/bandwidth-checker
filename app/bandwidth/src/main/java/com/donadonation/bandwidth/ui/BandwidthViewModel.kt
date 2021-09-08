@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anychart.data.Mapping
 import com.donadonation.bandwidth.local.Report
 import com.donadonation.bandwidth.repository.BandwidthRepository
-import com.github.mikephil.charting.data.LineData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -14,21 +14,19 @@ import kotlinx.coroutines.withContext
 
 class BandwidthViewModel constructor(private val repository: BandwidthRepository): ViewModel() {
 
-    private val _chartLineData: MutableLiveData<LineData> = MutableLiveData()
-    val chartLineData: LiveData<LineData>
+    private val _chartLineData: MutableLiveData<List<Mapping>> = MutableLiveData()
+    val chartLineData: LiveData<List<Mapping>>
         get() = _chartLineData
 
     private val _xAxisValue: MutableLiveData<List<String>> = MutableLiveData()
     val xAxisValue: LiveData<List<String>>
         get() = _xAxisValue
 
-    fun prepareChartData(){
+    fun prepareChartData() {
         viewModelScope.launch {
             val metricReport: List<Report> = getReport()
-            val xAxisStrings = repository.getXAxisValue(metricReport)
-            _xAxisValue.postValue(xAxisStrings)
-            val lineValues = repository.getYAxisValue(metricReport)
-            _chartLineData.postValue(lineValues)
+            val mappings: List<Mapping> = repository.getChartData(metricReport)
+            _chartLineData.postValue(mappings)
         }
     }
 

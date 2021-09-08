@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.BandwidthActivity">
 
-        <com.github.mikephil.charting.charts.LineChart
+        <com.anychart.AnyChartView
             android:id="@+id/line_chart_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_0dp"

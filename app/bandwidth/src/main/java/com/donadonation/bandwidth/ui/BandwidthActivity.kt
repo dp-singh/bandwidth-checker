@@ -1,24 +1,26 @@
 package com.donadonation.bandwidth.ui
 
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.anychart.AnyChart
+import com.anychart.charts.Cartesian
+import com.anychart.core.cartesian.series.Line
+import com.anychart.data.Mapping
+import com.anychart.enums.Anchor
+import com.anychart.enums.MarkerType
+import com.anychart.enums.TooltipPositionMode
 import com.donadonation.bandwidth.R
 import com.donadonation.bandwidth.databinding.ActivityBandwidthBinding
 import com.donadonation.bandwidth.di.appModule
 import com.donadonation.bandwidth.di.dbModule
 import com.donadonation.bandwidth.di.repositoryModule
 import com.donadonation.bandwidth.di.workerModule
-import com.donadonation.bandwidth.extension.formatToViewTimeDefaults
+import com.donadonation.bandwidth.extension.second
 import com.donadonation.bandwidth.worker.BandwidthWorker
-import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.formatter.ValueFormatter
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,11 +29,14 @@ import org.koin.core.context.startKoin
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+
 const val BAND_WIDTH_WORKER = "BANDWIDTH_WORKER"
+
 class BandwidthActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityBandwidthBinding
     private val bandwidthViewModel: BandwidthViewModel by viewModel()
+    private val cartesian: Cartesian by lazy { AnyChart.line() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,35 +71,23 @@ class BandwidthActivity : AppCompatActivity() {
     }
 
     private fun setUpChart() {
-        setXAxis()
-        setYAxis()
+        initChart()
     }
 
-    private fun setXAxis(){
-        val xAxis = viewBinding.lineChartView.xAxis
-        xAxis?.let {
-            it.position = XAxis.XAxisPosition.BOTTOM
-            it.textSize = 10f
-            it.textColor = Color.RED
-            it.setAvoidFirstLastClipping(true)
-            it.setDrawAxisLine(false)
-            it.setDrawGridLines(false)
+    private fun initChart() {
+        cartesian.apply {
+            animation(true)
+            padding(10, 20, 5, 20)
+            crosshair().enabled(true)
+            crosshair().yLabel(true)
+            tooltip().positionMode(TooltipPositionMode.POINT)
+            title("Bandwidth metric for last 24 hours")
+            yAxis(0).title("Data in MB/s")
+            xAxis(0).labels().padding(5, 5, 5, 5)
         }
     }
 
-    private fun setYAxis() {
-        val yAxis = viewBinding.lineChartView.axisLeft
-        yAxis?.let {
-            it.textSize = 12f
-            it.axisMinimum = 0f
-            it.axisMaximum = 20f
-            it.textColor = Color.BLACK
-            it.granularity = 1f
-            it.setDrawGridLines(false)
-        }
-    }
-
-    private fun startWorker(){
+    private fun startWorker() {
         val sendLogsWorkRequest =
             PeriodicWorkRequestBuilder<BandwidthWorker>(15, TimeUnit.MINUTES)
                 .addTag(BAND_WIDTH_WORKER)
@@ -106,33 +99,54 @@ class BandwidthActivity : AppCompatActivity() {
         )
     }
 
-    private fun observe(){
+    private fun observe() {
         bandwidthViewModel.apply {
             chartLineData.observe(this@BandwidthActivity) {
-                populateChart(lineData = it)
+                populateChart(it)
             }
-            xAxisValue.observe(this@BandwidthActivity) {
-                formatXAxis(it)
-            }
+
         }
     }
 
-    private fun populateChart(lineData: LineData) {
+    private fun populateChart(mappings: List<Mapping>) {
         viewBinding.lineChartView.apply {
-            data = lineData
-            invalidate()
+            setDownloadLine(mappings.first())
+            mappings.second()?.let {
+                setUploadLine(it)
+            }
+            cartesian.legend().enabled(true)
+            cartesian.legend().fontSize(13.0)
+            cartesian.legend().padding(0.0, 0.0, 10.0, 0.0)
+            setChart(cartesian)
         }
     }
 
-    private fun formatXAxis(timeList: List<String>) {
-        val formatter = object : ValueFormatter() {
-            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                return Date(value.toLong()).formatToViewTimeDefaults()
-            }
-        }
-        val xAxis = viewBinding.lineChartView.xAxis
-        xAxis.granularity = 1f
-        xAxis.valueFormatter = formatter
+    private fun setDownloadLine(series1Mapping: Mapping) {
+        val series1: Line = cartesian.line(series1Mapping)
+        series1.name("Download")
+        series1.hovered().markers().enabled(true)
+        series1.hovered().markers()
+            .type(MarkerType.CIRCLE)
+            .size(4.0)
+        series1.tooltip()
+            .position("right")
+            .anchor(Anchor.LEFT_CENTER)
+            .offsetX(5.0)
+            .offsetY(5.0)
+    }
+
+    private fun setUploadLine(series2Mapping: Mapping) {
+        val series2 = cartesian.line(series2Mapping)
+        series2.name("Upload")
+        series2.hovered().markers().enabled(true)
+        series2.hovered().markers()
+            .type(MarkerType.CIRCLE)
+            .size(4.0)
+        series2.tooltip()
+            .position("right")
+            .anchor(Anchor.LEFT_CENTER)
+            .offsetX(5.0)
+            .offsetY(5.0)
     }
 
 }
