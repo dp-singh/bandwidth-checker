@@ -1,5 +1,6 @@
 package com.donadonation.bandwidth.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -124,6 +125,7 @@ class BandwidthActivity : AppCompatActivity() {
     private fun setDownloadLine(series1Mapping: Mapping) {
         val series1: Line = cartesian.line(series1Mapping)
         series1.name("Download")
+        series1.color("#228B22")
         series1.hovered().markers().enabled(true)
         series1.hovered().markers()
             .type(MarkerType.CIRCLE)

@@ -18,10 +18,6 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
     val chartLineData: LiveData<List<Mapping>>
         get() = _chartLineData
 
-    private val _xAxisValue: MutableLiveData<List<String>> = MutableLiveData()
-    val xAxisValue: LiveData<List<String>>
-        get() = _xAxisValue
-
     fun prepareChartData() {
         viewModelScope.launch {
             val metricReport: List<Report> = getReport()
