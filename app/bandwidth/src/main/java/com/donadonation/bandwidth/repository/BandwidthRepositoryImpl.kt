@@ -125,10 +125,10 @@ class BandwidthRepositoryImpl constructor(
         return bandwidthDao.getAllEntries()
     }
 
-    override suspend fun getChartData(report: List<Report>): List<Mapping> {
+    override suspend fun getChartData(report: List<Report>): List<DataEntry> {
         val downloadData = collectList(report, true)
         val uploadData = collectList(report, false)
-        val seriesData: List<DataEntry> = xAxisEntries(report)
+        val dataEntryList: List<DataEntry> = xAxisEntries(report)
             .map {
                 val downloadBitRate =
                     downloadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
@@ -140,11 +140,7 @@ class BandwidthRepositoryImpl constructor(
                     uploadBitRate
                 )
             }
-        val set = Set.instantiate()
-        set.data(seriesData)
-        val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
-        val series2Mapping = set.mapAs("{ x: 'x', value: 'value2' }")
-        return listOf<Mapping>(series1Mapping, series2Mapping)
+        return dataEntryList
     }
 
     private fun xAxisEntries(report: List<Report>): List<Long> =

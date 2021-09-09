@@ -8,9 +8,11 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.anychart.AnyChart
+import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.charts.Cartesian
 import com.anychart.core.cartesian.series.Line
 import com.anychart.data.Mapping
+import com.anychart.data.Set
 import com.anychart.enums.Anchor
 import com.anychart.enums.MarkerType
 import com.anychart.enums.TooltipPositionMode
@@ -20,7 +22,9 @@ import com.donadonation.bandwidth.di.appModule
 import com.donadonation.bandwidth.di.dbModule
 import com.donadonation.bandwidth.di.repositoryModule
 import com.donadonation.bandwidth.di.workerModule
+import com.donadonation.bandwidth.extension.hide
 import com.donadonation.bandwidth.extension.second
+import com.donadonation.bandwidth.extension.visible
 import com.donadonation.bandwidth.worker.BandwidthWorker
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -102,14 +106,35 @@ class BandwidthActivity : AppCompatActivity() {
 
     private fun observe() {
         bandwidthViewModel.apply {
-            chartLineData.observe(this@BandwidthActivity) {
-                populateChart(it)
+            viewState.observe(this@BandwidthActivity) {
+                updateView(it)
             }
-
         }
     }
 
-    private fun populateChart(mappings: List<Mapping>) {
+    private fun updateView(viewState: ViewState) {
+        when(viewState){
+            is ViewState.Loading -> {
+                viewBinding.tvEmptyView.hide()
+                viewBinding.loader.visible()
+            }
+            is ViewState.EmptyView -> {
+                viewBinding.loader.hide()
+                viewBinding.tvEmptyView.visible()
+            }
+            is ViewState.UpdateView -> {
+                viewBinding.loader.hide()
+                populateChart(viewState.dataEntryList)
+            }
+        }
+    }
+
+    private fun populateChart(list: List<DataEntry>) {
+        val set = Set.instantiate()
+        set.data(list)
+        val series1Mapping = set.mapAs("{ x: 'x', value: 'value' }")
+        val series2Mapping = set.mapAs("{ x: 'x', value: 'value2' }")
+        val mappings = listOf<Mapping>(series1Mapping, series2Mapping)
         viewBinding.lineChartView.apply {
             setDownloadLine(mappings.first())
             mappings.second()?.let {

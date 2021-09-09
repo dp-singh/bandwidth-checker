@@ -1,5 +1,6 @@
 package com.donadonation.bandwidth.repository
 
+import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.data.Mapping
 import com.donadonation.bandwidth.local.Report
 import kotlinx.coroutines.flow.Flow
@@ -16,5 +17,5 @@ interface BandwidthRepository {
 
     suspend fun getReport(): List<Report>
 
-    suspend fun getChartData(report: List<Report>): List<Mapping>
+    suspend fun getChartData(report: List<Report>): List<DataEntry>
 }
