@@ -6,6 +6,7 @@ import com.anychart.data.Set
 import com.donadonation.bandwidth.entites.DisplayData
 import com.donadonation.bandwidth.entites.LineData
 import com.donadonation.bandwidth.extension.formatToViewTimeDefaults
+import com.donadonation.bandwidth.extension.lastXDays
 import com.donadonation.bandwidth.extension.orZero
 import com.donadonation.bandwidth.extension.toMbps
 import com.donadonation.bandwidth.local.BandwidthDao
@@ -141,6 +142,13 @@ class BandwidthRepositoryImpl constructor(
                 )
             }
         return dataEntryList
+    }
+
+    override suspend fun deleteOldData(currentTimeStamp: Long): Int {
+        val lastWeekTimeStamp = Date(currentTimeStamp).lastXDays(7)
+        return lastWeekTimeStamp?.let {
+            bandwidthDao.deleteByTimeStamp(it)
+        } ?: 0
     }
 
     private fun xAxisEntries(report: List<Report>): List<Long> =

@@ -1,6 +1,7 @@
 package com.donadonation.bandwidth.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
@@ -14,4 +15,7 @@ interface BandwidthDao {
 
     @Insert(onConflict = REPLACE)
     fun insertReport(report: Report): Long
+
+    @Query("DELETE from $METRIC_TABLE where startTime < :timeStamp")
+    fun deleteByTimeStamp(timeStamp: Long): Int
 }

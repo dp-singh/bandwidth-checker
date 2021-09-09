@@ -1,6 +1,5 @@
 package com.donadonation.bandwidth.ui
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
