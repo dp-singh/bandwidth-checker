@@ -3,4 +3,8 @@
     <string name="start">Start</string>
     <string name="view">View</string>
     <string name="no_data_to_show">No data to show</string>
+    <string name="upload_speed">Upload Speed</string>
+    <string name="network_condition">Network Condition</string>
+    <string name="last_updated_d_ago">last updated : %d ago</string>
+    <string name="download_speed">Download Speed</string>
 </resources>

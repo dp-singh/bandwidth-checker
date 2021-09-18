@@ -1,6 +1,7 @@
 package com.donadonation.bandwidth.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -35,6 +36,7 @@ import java.util.concurrent.TimeUnit
 
 
 const val BAND_WIDTH_WORKER = "BANDWIDTH_WORKER"
+const val TAG = "BANDWIDTH_ACTIVITY"
 
 class BandwidthActivity : AppCompatActivity() {
 
@@ -124,6 +126,12 @@ class BandwidthActivity : AppCompatActivity() {
             is ViewState.UpdateView -> {
                 viewBinding.loader.hide()
                 populateChart(viewState.dataEntryList)
+            }
+            is ViewState.LiveDownloadReport -> {
+                Log.d(TAG, "Live Download Report  ---> ${viewState.liveReport.bitrate}")
+            }
+            is ViewState.LiveUploadReport -> {
+                Log.d(TAG, "Live Upload Report ${viewState.liveReport.bitrate}")
             }
         }
     }

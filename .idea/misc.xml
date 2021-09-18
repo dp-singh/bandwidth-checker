@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/bandwidth/src/main/res/layout/activity_bandwidth.xml" value="0.25360230547550433" />
+        <entry key="app/bandwidth/src/main/res/drawable/outline_download_24.xml" value="0.2265625" />
+        <entry key="app/bandwidth/src/main/res/drawable/outline_upload_24.xml" value="0.2265625" />
+        <entry key="app/bandwidth/src/main/res/layout/activity_bandwidth.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.223731884057971" />
       </map>
     </option>

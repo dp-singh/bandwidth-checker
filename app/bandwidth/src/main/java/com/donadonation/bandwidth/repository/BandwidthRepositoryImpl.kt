@@ -1,14 +1,10 @@
 package com.donadonation.bandwidth.repository
 
+import android.util.Log
 import com.anychart.chart.common.dataentry.DataEntry
-import com.anychart.data.Mapping
-import com.anychart.data.Set
 import com.donadonation.bandwidth.entites.DisplayData
 import com.donadonation.bandwidth.entites.LineData
-import com.donadonation.bandwidth.extension.formatToViewTimeDefaults
-import com.donadonation.bandwidth.extension.lastXDays
-import com.donadonation.bandwidth.extension.orZero
-import com.donadonation.bandwidth.extension.toMbps
+import com.donadonation.bandwidth.extension.*
 import com.donadonation.bandwidth.local.BandwidthDao
 import com.donadonation.bandwidth.local.Report
 import fr.bmartel.speedtest.SpeedTestReport
@@ -18,11 +14,11 @@ import fr.bmartel.speedtest.model.SpeedTestError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 class BandwidthRepositoryImpl constructor(
     private val bandwidthDao: BandwidthDao,
@@ -33,7 +29,7 @@ class BandwidthRepositoryImpl constructor(
     override suspend fun startSampling(
         duration: Long?,
         interval: Long?
-    ): Flow<Pair<Result<Long>, Result<Long>>> {
+    ): Flow<Pair<Result<Report>, Result<Report>>> {
         val startTime = System.currentTimeMillis()
         return downloadReport(duration, interval, startTime).zip(
             uploadReport(
@@ -51,14 +47,13 @@ class BandwidthRepositoryImpl constructor(
         duration: Long?,
         interval: Long?,
         startTime:Long
-    ): Flow<Result<Long>> {
-        return callbackFlow<Result<Long>> {
+    ): Flow<Result<Report>> {
+        return callbackFlow<Result<Report>> {
             val speedTestSocket = SpeedTestSocket()
             val listener = object : ISpeedTestListener {
                 override fun onCompletion(report: SpeedTestReport?) {
                     report?.apply {
-                        val value = bandwidthDao.insertReport(mapper.map(this, startTime))
-                        trySend(Result.success(value))
+                        trySend(Result.success(mapper.map(this, startTime)))
                     } ?: kotlin.run {
                         trySend((Result.failure(Exception(SpeedTestError.CONNECTION_ERROR.name))))
                     }
@@ -87,14 +82,13 @@ class BandwidthRepositoryImpl constructor(
         duration: Long?,
         interval: Long?,
         startTime:Long
-    ): Flow<Result<Long>> {
-        return callbackFlow<Result<Long>> {
+    ): Flow<Result<Report>> {
+        return callbackFlow<Result<Report>> {
             val speedTestSocket = SpeedTestSocket()
             val listener = object : ISpeedTestListener {
                 override fun onCompletion(report: SpeedTestReport?) {
                     report?.apply {
-                        val value = bandwidthDao.insertReport(mapper.map(this,startTime))
-                        trySend(Result.success(value))
+                        trySend(Result.success(mapper.map(this,startTime)))
                     } ?: kotlin.run {
                         trySend((Result.failure(Exception(SpeedTestError.CONNECTION_ERROR.name))))
                     }
@@ -115,6 +109,16 @@ class BandwidthRepositoryImpl constructor(
             speedTestSocket.startUpload("http://ipv4.ikoula.testdebit.info/", 1000000)
             awaitClose { speedTestSocket.removeSpeedTestListener(listener) }
         }.flowOn(Dispatchers.IO)
+    }
+
+
+    @ExperimentalCoroutinesApi
+    override fun getLiveReport(interval: Long): Flow<Pair<Result<Report>, Result<Report>>> {
+        return interval
+            .tickerFlow(10000)
+            .flatMapLatest { startSampling(0, 0) }
+            .onStart { Log.d("TAG", "Live on start") }
+            .flowOn(Dispatchers.IO)
     }
 
 

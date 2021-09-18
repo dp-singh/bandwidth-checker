@@ -1,5 +1,7 @@
 package com.donadonation.bandwidth.extension
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -13,4 +15,13 @@ fun Date.lastXDays(day: Int, zone: TimeZone = TimeZone.getDefault()): Long? {
     calendar.timeInMillis = this.time
     calendar.add(Calendar.DATE, -day)
     return calendar.time.time
+}
+
+
+fun Long.tickerFlow(initialDelay: Long = 0L) = flow {
+    delay(initialDelay)
+    while (true) {
+        emit(Unit)
+        delay(this@tickerFlow)
+    }
 }

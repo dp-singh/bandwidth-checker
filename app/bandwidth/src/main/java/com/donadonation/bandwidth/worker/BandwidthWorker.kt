@@ -14,10 +14,15 @@ class BandwidthWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val deleteCount = repository.deleteOldData(getCurrentTime())
-        Log.d("WORKER", "delete count " + deleteCount)
-        val res = repository.startSampling(null, null)
+        repository.deleteOldData(getCurrentTime())
+        val result = repository.startSampling(null, null)
             .last()
+        if(result.first.isSuccess){
+            result.first.getOrNull()?.let { repository.saveReport(it) }
+        }
+        if(result.second.isSuccess){
+            result.second.getOrNull()?.let { repository.saveReport(it) }
+        }
         return Result.success()
     }
 
