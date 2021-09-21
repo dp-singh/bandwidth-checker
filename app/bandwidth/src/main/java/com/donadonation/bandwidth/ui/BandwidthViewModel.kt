@@ -1,19 +1,25 @@
 package com.donadonation.bandwidth.ui
 
-import android.util.Log
+import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anychart.chart.common.dataentry.DataEntry
+import com.donadonation.bandwidth.entites.Resource
+import com.donadonation.bandwidth.entites.enums.NetworkStrength
+import com.donadonation.bandwidth.extension.orZero
+import com.donadonation.bandwidth.extension.round
+import com.donadonation.bandwidth.extension.toMbps
 import com.donadonation.bandwidth.local.Report
 import com.donadonation.bandwidth.repository.BandwidthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 
 class BandwidthViewModel constructor(private val repository: BandwidthRepository) : ViewModel() {
@@ -22,27 +28,43 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
     val viewState: LiveData<ViewState>
         get() = _viewState
 
+    val refreshState: ObservableBoolean = ObservableBoolean(false)
+    val uploadRateText: ObservableField<String> = ObservableField("0")
+    val downloadRateText: ObservableField<String> = ObservableField("0")
+    val lastUpdatedText: ObservableField<Long> = ObservableField()
+    val networkStrength: ObservableField<NetworkStrength> = ObservableField()
+
+
     init {
         getLiveNetworkUpdate()
     }
 
     private fun getLiveNetworkUpdate() {
         repository.getLiveReport(60 * 1000)
-            .onEach { it.updateLiveView() }
+            .onEach {
+                if(it is Resource.Loading){
+                    refreshState.set(true)
+                }else{
+                    refreshState.set(false)
+                    it.data?.updateLiveView()
+                }
+
+            }
             .launchIn(viewModelScope)
     }
 
 
     private fun Pair<Result<Report>, Result<Report>>.updateLiveView() {
+        setLastUpdatedTimestamp()
         if (this.first.isSuccess) {
             this.first.getOrNull()
                 ?.takeIf { it.isDownload }
                 ?.let {
-                    _viewState.value = ViewState.LiveDownloadReport(it)
+                    downloadRateText.set(it.bitrate.toMbps().round())
                 } ?: kotlin.run {
                 this.first.getOrNull()
                     ?.let {
-                        _viewState.value = ViewState.LiveUploadReport(it)
+                        uploadRateText.set(it.bitrate.toMbps().round())
                     }
             }
         }
@@ -50,14 +72,38 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
             this.second.getOrNull()
                 ?.takeIf { it.isDownload }
                 ?.let {
-                    _viewState.value = ViewState.LiveDownloadReport(it)
+                    downloadRateText.set(it.bitrate.toMbps().round())
                 } ?: kotlin.run {
                 this.second.getOrNull()
                     ?.let {
-                        _viewState.value = ViewState.LiveUploadReport(it)
+                        uploadRateText.set(it.bitrate.toMbps().round())
                     }
             }
         }
+        setNetworkStrength()
+    }
+
+    private fun setNetworkStrength() {
+        if (uploadRateText.get().isNullOrEmpty().not() &&
+            downloadRateText.get().isNullOrEmpty().not()
+        ) {
+            val uploadRate = uploadRateText.get()?.toFloat().orZero()
+            val downloadRate = downloadRateText.get()?.toFloat().orZero()
+            if (uploadRate > 3 && downloadRate > 5) {
+                networkStrength.set(NetworkStrength.HIGH)
+            } else if (uploadRate > 1 && downloadRate > 3) {
+                networkStrength.set(NetworkStrength.MEDIUM)
+            } else {
+                networkStrength.set(NetworkStrength.LOW)
+            }
+        } else {
+            networkStrength.set(null)
+        }
+    }
+
+    private fun setLastUpdatedTimestamp(){
+        val calender = Calendar.getInstance()
+        lastUpdatedText.set(calender.time.time)
     }
 
 
@@ -85,6 +131,4 @@ sealed class ViewState {
     object Loading : ViewState()
     object EmptyView : ViewState()
     data class UpdateView(val dataEntryList: List<DataEntry>) : ViewState()
-    data class LiveUploadReport(val liveReport: Report) : ViewState()
-    data class LiveDownloadReport(val liveReport: Report) : ViewState()
 }

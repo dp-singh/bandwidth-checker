@@ -4,6 +4,7 @@ import android.util.Log
 import com.anychart.chart.common.dataentry.DataEntry
 import com.donadonation.bandwidth.entites.DisplayData
 import com.donadonation.bandwidth.entites.LineData
+import com.donadonation.bandwidth.entites.Resource
 import com.donadonation.bandwidth.extension.*
 import com.donadonation.bandwidth.local.BandwidthDao
 import com.donadonation.bandwidth.local.Report
@@ -113,11 +114,16 @@ class BandwidthRepositoryImpl constructor(
 
 
     @ExperimentalCoroutinesApi
-    override fun getLiveReport(interval: Long): Flow<Pair<Result<Report>, Result<Report>>> {
+    override fun getLiveReport(interval: Long): Flow<Resource<Pair<Result<Report>, Result<Report>>>> {
         return interval
             .tickerFlow(10000)
-            .flatMapLatest { startSampling(0, 0) }
-            .onStart { Log.d("TAG", "Live on start") }
+            .flatMapLatest { res ->
+                flow {
+                    emit(Resource.Loading())
+                    emitAll(startSampling(0, 0)
+                        .map { Resource.Success(it) })
+                }
+            }
             .flowOn(Dispatchers.IO)
     }
 

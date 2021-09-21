@@ -3,8 +3,12 @@
     <string name="start">Start</string>
     <string name="view">View</string>
     <string name="no_data_to_show">No data to show</string>
-    <string name="upload_speed">Upload Speed</string>
-    <string name="network_condition">Network Condition</string>
-    <string name="last_updated_d_ago">last updated : %d ago</string>
-    <string name="download_speed">Download Speed</string>
+    <string name="upload_speed">Upload Speed : </string>
+    <string name="network_strength">Network Strength : </string>
+    <string name="last_updated_d_ago">Last updated at : %s</string>
+    <string name="download_speed">Download Speed : </string>
+    <string name="speed_in_mbps">%s Mbps</string>
+    <string name="high">High</string>
+    <string name="medium">Medium</string>
+    <string name="low">Low</string>
 </resources>

@@ -17,13 +17,14 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             style="@style/Widget.MaterialComponents.CircularProgressIndicator"
-            android:layout_width="@dimen/_16dp"
-            android:layout_height="@dimen/_16dp"
+            android:layout_width="@dimen/_8dp"
+            android:layout_height="@dimen/_8dp"
             android:layout_marginEnd="@dimen/_8dp"
             android:indeterminate="true"
             app:layout_constraintBottom_toBottomOf="@id/last_updated"
             app:layout_constraintEnd_toStartOf="@id/last_updated"
-            app:layout_constraintTop_toTopOf="@id/last_updated" />
+            app:layout_constraintTop_toTopOf="@id/last_updated"
+            app:visibility="@{viewModel.refreshState}" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/last_updated"
@@ -31,8 +32,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16dp"
-            android:text="@string/last_updated_d_ago"
-            app:layout_constraintEnd_toEndOf="@id/tv_network_condition_label"
+            android:gravity="start"
+            app:lastUpdated="@{viewModel.lastUpdatedText}"
+            android:layout_marginEnd="@dimen/_16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -40,50 +43,52 @@
             style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_16dp"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_32dp"
             android:text="@string/upload_speed"
-            app:layout_constraintBottom_toTopOf="@id/btn_upload_speed_value"
-            app:layout_constraintEnd_toStartOf="@id/tv_download_speed_label"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/last_updated" />
 
         <com.google.android.material.button.MaterialButton
-            android:clickable="false"
             android:id="@+id/btn_upload_speed_value"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:clickable="false"
+            android:text="@{String.format(@string/speed_in_mbps,viewModel.uploadRateText)}"
+            android:textAllCaps="false"
             app:icon="@drawable/outline_upload_24"
-            app:layout_constraintBottom_toBottomOf="@id/parent_top"
-            app:layout_constraintEnd_toEndOf="@id/tv_upload_speed_label"
-            app:layout_constraintStart_toStartOf="@id/tv_upload_speed_label"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.6" />
+            app:layout_constraintBottom_toBottomOf="@id/tv_upload_speed_label"
+            app:layout_constraintStart_toEndOf="@id/label_barrier"
+            app:layout_constraintTop_toTopOf="@id/tv_upload_speed_label" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_download_speed_label"
             style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_32dp"
             android:text="@string/download_speed"
-            app:layout_constraintBottom_toTopOf="@id/btn_download_speed_value"
-            app:layout_constraintEnd_toStartOf="@id/tv_network_condition_label"
-            app:layout_constraintStart_toEndOf="@id/tv_upload_speed_label" />
+            app:layout_constraintStart_toStartOf="@id/tv_upload_speed_label"
+            app:layout_constraintTop_toBottomOf="@id/btn_upload_speed_value"
+
+            />
 
 
         <com.google.android.material.button.MaterialButton
-            android:clickable="false"
             android:id="@+id/btn_download_speed_value"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="false"
+            android:text="@{String.format(@string/speed_in_mbps,viewModel.downloadRateText)}"
+            android:textAllCaps="false"
             app:icon="@drawable/outline_download_24"
-            app:layout_constraintBottom_toBottomOf="@id/parent_top"
-            app:layout_constraintEnd_toEndOf="@id/tv_download_speed_label"
-            app:layout_constraintStart_toStartOf="@id/tv_download_speed_label"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.6" />
+            app:layout_constraintBottom_toBottomOf="@id/tv_download_speed_label"
+            app:layout_constraintStart_toStartOf="@id/btn_upload_speed_value"
+            app:layout_constraintTop_toTopOf="@id/tv_download_speed_label"
+            />
 
 
         <com.google.android.material.textview.MaterialTextView
@@ -91,32 +96,32 @@
             style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/_16dp"
-            android:text="@string/network_condition"
-            app:layout_constraintBottom_toTopOf="@id/btn_network_condition_value"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_download_speed_label" />
+            android:layout_marginTop="@dimen/_32dp"
+            android:text="@string/network_strength"
+            app:layout_constraintTop_toBottomOf="@id/btn_download_speed_value"
+            app:layout_constraintStart_toStartOf="@id/tv_upload_speed_label" />
 
         <com.google.android.material.button.MaterialButton
-            android:clickable="false"
             android:id="@+id/btn_network_condition_value"
             style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/parent_top"
-            app:layout_constraintEnd_toEndOf="@id/tv_network_condition_label"
-            app:layout_constraintStart_toStartOf="@id/tv_network_condition_label"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.6" />
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:clickable="false"
+            app:networkStrength="@{viewModel.networkStrength}"
+            app:layout_constraintStart_toStartOf="@id/btn_download_speed_value"
+            app:layout_constraintTop_toTopOf="@id/tv_network_condition_label"
+            app:layout_constraintBottom_toBottomOf="@id/tv_network_condition_label"
+            />
 
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/parent_top"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_1dp"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".3"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/label_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="tv_download_speed_label,tv_download_speed_label,tv_network_condition_label" />
+
 
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -129,16 +134,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/parent_top" />
+            app:layout_constraintBottom_toTopOf="@id/btn_network_condition_value" />
 
         <com.anychart.AnyChartView
             android:id="@+id/line_chart_view"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_0dp"
+            android:layout_marginTop="@dimen/_32dp"
             app:layout_constraintDimensionRatio="w,3:4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/parent_top" />
+            app:layout_constraintTop_toBottomOf="@id/btn_network_condition_value" />
 
 
         <com.google.android.material.button.MaterialButton
@@ -163,7 +169,7 @@
             app:layout_constraintBottom_toBottomOf="@id/line_chart_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/parent_top"
+            app:layout_constraintTop_toBottomOf="@id/btn_network_condition_value"
             tools:text="@string/no_data_to_show" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

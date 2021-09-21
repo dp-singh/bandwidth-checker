@@ -127,12 +127,6 @@ class BandwidthActivity : AppCompatActivity() {
                 viewBinding.loader.hide()
                 populateChart(viewState.dataEntryList)
             }
-            is ViewState.LiveDownloadReport -> {
-                Log.d(TAG, "Live Download Report  ---> ${viewState.liveReport.bitrate}")
-            }
-            is ViewState.LiveUploadReport -> {
-                Log.d(TAG, "Live Upload Report ${viewState.liveReport.bitrate}")
-            }
         }
     }
 
