@@ -1,6 +1,5 @@
 package com.donadonation.bandwidth.repository
 
-import android.util.Log
 import com.anychart.chart.common.dataentry.DataEntry
 import com.donadonation.bandwidth.entites.DisplayData
 import com.donadonation.bandwidth.entites.LineData
@@ -12,14 +11,10 @@ import fr.bmartel.speedtest.SpeedTestReport
 import fr.bmartel.speedtest.SpeedTestSocket
 import fr.bmartel.speedtest.inter.ISpeedTestListener
 import fr.bmartel.speedtest.model.SpeedTestError
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 class BandwidthRepositoryImpl constructor(
     private val bandwidthDao: BandwidthDao,
@@ -27,13 +22,85 @@ class BandwidthRepositoryImpl constructor(
 ) : BandwidthRepository {
 
     @ExperimentalCoroutinesApi
-    override suspend fun startSampling(
+    override suspend fun downloadReport(
+        duration: Long?,
+        interval: Long?,
+        startTime: Long
+    ): Result<Report> {
+       return withContext(Dispatchers.IO){
+            suspendCancellableCoroutine {cont->
+                val speedTestSocket = SpeedTestSocket()
+                val listener = object : ISpeedTestListener {
+                    override fun onCompletion(report: SpeedTestReport?) {
+                        report?.apply {
+                            cont.resume(Result.success(mapper.map(this, startTime))){
+
+                            }
+                        } ?: kotlin.run {
+                            cont.resume(Result.failure(Exception(SpeedTestError.CONNECTION_ERROR.name))){}
+                        }
+                    }
+
+                    override fun onProgress(percent: Float, report: SpeedTestReport?) {
+
+                    }
+
+                    override fun onError(speedTestError: SpeedTestError?, errorMessage: String?) {
+                        cont.resume(Result.failure(Exception(speedTestError?.name))){}
+                    }
+                }
+                speedTestSocket.addSpeedTestListener(listener)
+                duration?.let {
+                    speedTestSocket.downloadSetupTime = it
+                }
+                speedTestSocket.startDownload("http://ipv4.ikoula.testdebit.info/1M.iso")
+            }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    override suspend fun uploadReport(
+        duration: Long?,
+        interval: Long?,
+        startTime: Long
+    ): Result<Report> {
+        return withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { cont ->
+                val speedTestSocket = SpeedTestSocket()
+                val listener = object : ISpeedTestListener {
+                    override fun onCompletion(report: SpeedTestReport?) {
+                        report?.apply {
+                            cont.resume(Result.success(mapper.map(this, startTime))){}
+                        } ?: kotlin.run {
+                            cont.resume((Result.failure(Exception(SpeedTestError.CONNECTION_ERROR.name)))){}
+                        }
+                    }
+
+                    override fun onProgress(percent: Float, report: SpeedTestReport?) {
+
+                    }
+
+                    override fun onError(speedTestError: SpeedTestError?, errorMessage: String?) {
+                        cont.resume((Result.failure(Exception(speedTestError?.name)))) {}
+                    }
+                }
+                speedTestSocket.addSpeedTestListener(listener)
+                duration?.let {
+                    speedTestSocket.uploadSetupTime = it
+                }
+                speedTestSocket.startUpload("http://ipv4.ikoula.testdebit.info/", 1000000)
+            }
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    override suspend fun startSamplingAsFlow(
         duration: Long?,
         interval: Long?
     ): Flow<Pair<Result<Report>, Result<Report>>> {
         val startTime = System.currentTimeMillis()
-        return downloadReport(duration, interval, startTime).zip(
-            uploadReport(
+        return downloadReportAsFlow(duration, interval, startTime).zip(
+            uploadReportAsFlow(
                 duration,
                 interval,
                 startTime
@@ -44,7 +111,7 @@ class BandwidthRepositoryImpl constructor(
     }
 
     @ExperimentalCoroutinesApi
-    override suspend fun downloadReport(
+    override suspend fun downloadReportAsFlow(
         duration: Long?,
         interval: Long?,
         startTime:Long
@@ -79,7 +146,7 @@ class BandwidthRepositoryImpl constructor(
     }
 
     @ExperimentalCoroutinesApi
-    override suspend fun uploadReport(
+    override suspend fun uploadReportAsFlow(
         duration: Long?,
         interval: Long?,
         startTime:Long
@@ -119,8 +186,9 @@ class BandwidthRepositoryImpl constructor(
             .tickerFlow(10000)
             .flatMapLatest { res ->
                 flow {
-                    emit(Resource.Loading())
-                    emitAll(startSampling(0, 0)
+                    emit(Resource.Loading<Pair<Result<Report>, Result<Report>>>())
+                    emitAll(
+                        startSamplingAsFlow(0, 0)
                         .map { Resource.Success(it) })
                 }
             }

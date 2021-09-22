@@ -13,6 +13,7 @@ import com.anychart.charts.Cartesian
 import com.anychart.core.cartesian.series.Line
 import com.anychart.data.Mapping
 import com.anychart.data.Set
+import com.anychart.enums.Align
 import com.anychart.enums.Anchor
 import com.anychart.enums.MarkerType
 import com.anychart.enums.TooltipPositionMode
@@ -142,6 +143,7 @@ class BandwidthActivity : AppCompatActivity() {
                 setUploadLine(it)
             }
             cartesian.legend().enabled(true)
+            cartesian.legend().align(Align.RIGHT)
             cartesian.legend().fontSize(13.0)
             cartesian.legend().padding(0.0, 0.0, 10.0, 0.0)
             setChart(cartesian)
