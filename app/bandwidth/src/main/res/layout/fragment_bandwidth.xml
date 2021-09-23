@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.donadonation.bandwidth.ui.BandwidthViewModel" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ui.BandwidthActivity">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                android:layout_width="@dimen/_8dp"
+                android:layout_height="@dimen/_8dp"
+                android:layout_marginEnd="@dimen/_8dp"
+                android:indeterminate="true"
+                app:layout_constraintBottom_toBottomOf="@id/last_updated"
+                app:layout_constraintEnd_toStartOf="@id/last_updated"
+                app:layout_constraintTop_toTopOf="@id/last_updated"
+                app:visibility="@{viewModel.refreshState}" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/last_updated"
+                style="@style/TextAppearance.MaterialComponents.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16dp"
+                android:layout_marginEnd="@dimen/_16dp"
+                android:gravity="start"
+                app:lastUpdated="@{viewModel.lastUpdatedText}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_upload_speed_label"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_32dp"
+                android:text="@string/upload_speed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/last_updated" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_upload_speed_value"
+                style="@style/Widget.App.Button.Download"
+                tools:text="@tools:sample/lorem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16dp"
+                android:clickable="false"
+                android:text="@{String.format(@string/speed_in_mbps,viewModel.uploadRateText)}"
+                android:textAllCaps="false"
+                app:icon="@drawable/outline_upload_24"
+                app:layout_constraintBottom_toBottomOf="@id/tv_upload_speed_label"
+                app:layout_constraintStart_toEndOf="@id/label_barrier"
+                app:layout_constraintTop_toTopOf="@id/tv_upload_speed_label" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4dp"
+                android:layout_marginTop="@dimen/_4dp"
+                app:layout_constraintStart_toEndOf="@id/btn_upload_speed_value"
+                app:layout_constraintTop_toTopOf="@id/btn_upload_speed_value"
+                app:srcCompat="@drawable/ic_baseline_info_24"
+                app:tooltipText="@{String.format(@string/recommended_speed,viewModel.recommendedUploadSpeed)}" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_download_speed_label"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_32dp"
+                android:text="@string/download_speed"
+                app:layout_constraintStart_toStartOf="@id/tv_upload_speed_label"
+                app:layout_constraintTop_toBottomOf="@id/btn_upload_speed_value"
+
+                />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_download_speed_value"
+                style="@style/Widget.App.Button.Upload"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:text="@{String.format(@string/speed_in_mbps,viewModel.downloadRateText)}"
+                android:textAllCaps="false"
+                app:icon="@drawable/outline_download_24"
+                app:layout_constraintBottom_toBottomOf="@id/tv_download_speed_label"
+                app:layout_constraintStart_toStartOf="@id/btn_upload_speed_value"
+                app:layout_constraintTop_toTopOf="@id/tv_download_speed_label" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4dp"
+                android:layout_marginTop="@dimen/_4dp"
+                app:layout_constraintStart_toEndOf="@id/btn_download_speed_value"
+                app:layout_constraintTop_toTopOf="@id/btn_download_speed_value"
+                app:srcCompat="@drawable/ic_baseline_info_24"
+                app:tooltipText="@{String.format(@string/recommended_speed,viewModel.recommendedUDownloadSpeed)}" />
+
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_network_condition_label"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_32dp"
+                android:text="@string/network_strength"
+                app:layout_constraintStart_toStartOf="@id/tv_upload_speed_label"
+                app:layout_constraintTop_toBottomOf="@id/btn_download_speed_value" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_network_condition_value"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                app:layout_constraintBottom_toBottomOf="@id/tv_network_condition_label"
+                app:layout_constraintStart_toStartOf="@id/btn_download_speed_value"
+                app:layout_constraintTop_toTopOf="@id/tv_network_condition_label"
+                app:networkStrength="@{viewModel.networkStrength}" />
+
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/label_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="tv_download_speed_label,tv_download_speed_label,tv_network_condition_label" />
+
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/loader"
+                style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btn_network_condition_value"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.anychart.AnyChartView
+                android:id="@+id/line_chart_view"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_32dp"
+                app:layout_constraintDimensionRatio="w,3:4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_network_condition_value" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_empty_view"
+                style="@style/TextAppearance.MaterialComponents.Body2"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/no_data_to_show"
+                app:layout_constraintBottom_toBottomOf="@id/line_chart_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_network_condition_value"
+                tools:text="@string/no_data_to_show" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>
