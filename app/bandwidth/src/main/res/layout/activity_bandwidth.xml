@@ -167,19 +167,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_network_condition_value" />
 
-
-            <com.google.android.material.button.MaterialButton
-                style="?materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="@{()->viewModel.prepareChartData()}"
-                android:text="@string/view"
-                android:textAllCaps="false"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/line_chart_view" />
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_empty_view"
                 style="@style/TextAppearance.MaterialComponents.Body2"

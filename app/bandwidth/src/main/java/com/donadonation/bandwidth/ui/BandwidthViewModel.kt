@@ -39,10 +39,11 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
 
     init {
         getLiveNetworkUpdate()
+        prepareChartData()
     }
 
     private fun getLiveNetworkUpdate() {
-        repository.getLiveReport(60 * 1000)
+        repository.getLiveReport(60 * 1000L)
             .onEach {
                 if(it is Resource.Loading){
                     refreshState.set(true)
@@ -124,7 +125,9 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
 
     private suspend fun getReport(): List<Report> {
         return withContext(Dispatchers.IO) {
-            repository.getReport()
+            val current = Calendar.getInstance()
+            val currentTimestamp = current.time.time
+            repository.getReport(currentTimestamp)
         }
     }
 }

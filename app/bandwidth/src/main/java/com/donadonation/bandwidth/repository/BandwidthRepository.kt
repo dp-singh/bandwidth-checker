@@ -38,7 +38,7 @@ interface BandwidthRepository {
 
     suspend fun saveReport(report: Report): Long
 
-    suspend fun getReport(): List<Report>
+    suspend fun getReport(currentTimeStamp: Long): List<Report>
 
     suspend fun getLastEntryTime(): Long?
 

@@ -200,9 +200,11 @@ class BandwidthRepositoryImpl constructor(
         return bandwidthDao.insertReport(report)
     }
 
-    override suspend fun getReport(): List<Report> {
+    override suspend fun getReport(currentTimeStamp: Long): List<Report> {
         return bandwidthDao.getAllEntries()
+            .filter { greaterThanDay(it.startTime, currentTimeStamp).not() }
     }
+
 
     override suspend fun getLastEntryTime(): Long? {
         return bandwidthDao.getLastEntryInTable()
@@ -244,6 +246,12 @@ class BandwidthRepositoryImpl constructor(
             .toList()
             .sortedBy { it.startTime }
             .map { it.startTime }
+
+    private fun greaterThanDay(lastSavedTimeStamp: Long, latestTimestamp: Long): Boolean {
+        val diff = latestTimestamp - lastSavedTimeStamp
+        val diffDays: Long = diff / (24 * 60 * 60 * 1000)
+        return diffDays > 0
+    }
 
 
     private fun collectList(report: List<Report>, isDownload: Boolean): List<DisplayData> =
