@@ -18,4 +18,7 @@ interface BandwidthDao {
 
     @Query("DELETE from $METRIC_TABLE where startTime < :timeStamp")
     fun deleteByTimeStamp(timeStamp: Long): Int
+
+    @Query("SELECT startTime from $METRIC_TABLE order by startTime desc limit 1")
+    fun getLastEntryInTable(): Long?
 }

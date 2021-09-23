@@ -9,8 +9,6 @@ import java.time.Duration
 
 interface BandwidthRepository {
 
-
-
     suspend fun downloadReport(
         duration: Long?,
         interval: Long?,
@@ -41,6 +39,10 @@ interface BandwidthRepository {
     suspend fun saveReport(report: Report): Long
 
     suspend fun getReport(): List<Report>
+
+    suspend fun getLastEntryTime(): Long?
+
+    suspend fun shouldSave(lastSavedTimeStamp: Long, latestTimestamp: Long): Boolean
 
     suspend fun getChartData(report: List<Report>): List<DataEntry>
 

@@ -30,7 +30,7 @@ fun setNetworkStrength(button: Button, networkStrength: NetworkStrength?) {
 fun lastUpdated(button: TextView, timestamp: Long?) {
     timestamp?.let {
         button.visibility = View.VISIBLE
-        val simpleDateFormat = SimpleDateFormat("dd MMM yyyy, dd:mm")
+        val simpleDateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a")
         val nowDate = Date(timestamp)
         val date = simpleDateFormat.format(nowDate)
         button.text = button.context.getString(R.string.last_updated_d_ago, date)

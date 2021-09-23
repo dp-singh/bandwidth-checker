@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.withContext
+import java.time.Period
 import java.util.*
 
 class BandwidthWorker(
@@ -25,11 +26,26 @@ class BandwidthWorker(
             val startTime = System.currentTimeMillis()
             val downloadReport = repository.downloadReport(0, 0, startTime)
             val uploadReport = repository.uploadReport(0, 0, startTime)
+            val lastTimestampEntered = repository.getLastEntryTime()
             if (downloadReport.isSuccess) {
-                downloadReport.getOrNull()?.let { repository.saveReport(it) }
+                downloadReport.getOrNull()
+                    ?.takeIf {
+                        lastTimestampEntered == null || repository.shouldSave(
+                            lastTimestampEntered,
+                            it.startTime
+                        )
+                    }
+                    ?.let { repository.saveReport(it) }
             }
             if (uploadReport.isSuccess) {
-                uploadReport.getOrNull()?.let { repository.saveReport(it) }
+                uploadReport.getOrNull()
+                    ?.takeIf {
+                        lastTimestampEntered == null || repository.shouldSave(
+                            lastTimestampEntered,
+                            it.startTime
+                        )
+                    }
+                    ?.let { repository.saveReport(it) }
             }
             Result.success()
         }

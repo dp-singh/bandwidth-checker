@@ -204,6 +204,16 @@ class BandwidthRepositoryImpl constructor(
         return bandwidthDao.getAllEntries()
     }
 
+    override suspend fun getLastEntryTime(): Long? {
+        return bandwidthDao.getLastEntryInTable()
+    }
+
+    override suspend fun shouldSave(lastSavedTimeStamp: Long, latestTimestamp: Long): Boolean {
+        val diff = latestTimestamp - lastSavedTimeStamp
+        val diffMinutes: Long = diff / (60 * 1000)
+        return (diffMinutes >= 30)
+    }
+
     override suspend fun getChartData(report: List<Report>): List<DataEntry> {
         val downloadData = collectList(report, true)
         val uploadData = collectList(report, false)
