@@ -67,6 +67,16 @@
                 app:layout_constraintStart_toEndOf="@id/label_barrier"
                 app:layout_constraintTop_toTopOf="@id/tv_upload_speed_label" />
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4dp"
+                android:layout_marginTop="@dimen/_4dp"
+                app:layout_constraintStart_toEndOf="@id/btn_upload_speed_value"
+                app:layout_constraintTop_toTopOf="@id/btn_upload_speed_value"
+                app:srcCompat="@drawable/ic_baseline_info_24"
+                app:tooltipText="@{String.format(@string/recommended_speed,viewModel.recommendedUploadSpeed)}" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_download_speed_label"
                 style="@style/TextAppearance.MaterialComponents.Subtitle1"
@@ -92,6 +102,16 @@
                 app:layout_constraintBottom_toBottomOf="@id/tv_download_speed_label"
                 app:layout_constraintStart_toStartOf="@id/btn_upload_speed_value"
                 app:layout_constraintTop_toTopOf="@id/tv_download_speed_label" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4dp"
+                android:layout_marginTop="@dimen/_4dp"
+                app:layout_constraintStart_toEndOf="@id/btn_download_speed_value"
+                app:layout_constraintTop_toTopOf="@id/btn_download_speed_value"
+                app:srcCompat="@drawable/ic_baseline_info_24"
+                app:tooltipText="@{String.format(@string/recommended_speed,viewModel.recommendedUDownloadSpeed)}" />
 
 
             <com.google.android.material.textview.MaterialTextView

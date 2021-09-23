@@ -7,6 +7,7 @@
     <string name="network_strength">Network Strength : </string>
     <string name="last_updated_d_ago">Last updated at : %s</string>
     <string name="download_speed">Download Speed : </string>
+    <string name="recommended_speed">Recommended Speed : %s Mbps</string>
     <string name="speed_in_mbps">%s Mbps</string>
     <string name="high">High</string>
     <string name="medium">Medium</string>

@@ -31,6 +31,8 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
     val refreshState: ObservableBoolean = ObservableBoolean(false)
     val uploadRateText: ObservableField<String> = ObservableField("0")
     val downloadRateText: ObservableField<String> = ObservableField("0")
+    val recommendedUploadSpeed: ObservableField<String> = ObservableField("1.00")
+    val recommendedUDownloadSpeed: ObservableField<String> = ObservableField("3.00")
     val lastUpdatedText: ObservableField<Long> = ObservableField()
     val networkStrength: ObservableField<NetworkStrength> = ObservableField()
 
