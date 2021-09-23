@@ -1,8 +1,10 @@
 package com.donadonation.bandwidth.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -168,6 +170,7 @@ class BandwidthActivity : AppCompatActivity() {
     private fun setUploadLine(series2Mapping: Mapping) {
         val series2 = cartesian.line(series2Mapping)
         series2.name("Upload")
+        series2.color("#1E90FF")
         series2.hovered().markers().enabled(true)
         series2.hovered().markers()
             .type(MarkerType.CIRCLE)

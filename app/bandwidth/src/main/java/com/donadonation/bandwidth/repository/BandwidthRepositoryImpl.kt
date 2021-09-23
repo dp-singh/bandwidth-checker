@@ -217,21 +217,23 @@ class BandwidthRepositoryImpl constructor(
     }
 
     override suspend fun getChartData(report: List<Report>): List<DataEntry> {
-        val downloadData = collectList(report, true)
-        val uploadData = collectList(report, false)
-        val dataEntryList: List<DataEntry> = xAxisEntries(report)
-            .map {
-                val downloadBitRate =
-                    downloadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
-                val uploadBitRate =
-                    uploadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
-                LineData(
-                    Date(it).formatToViewTimeDefaults(),
-                    downloadBitRate,
-                    uploadBitRate
-                )
-            }
-        return dataEntryList
+        return withContext(Dispatchers.IO) {
+            val downloadData = collectList(report, true)
+            val uploadData = collectList(report, false)
+            val dataEntryList: List<DataEntry> = xAxisEntries(report)
+                .map {
+                    val downloadBitRate =
+                        downloadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
+                    val uploadBitRate =
+                        uploadData.find { entry -> entry.timestamp == it }?.bitRate.orZero()
+                    LineData(
+                        Date(it).formatToViewTimeDefaults(),
+                        downloadBitRate,
+                        uploadBitRate
+                    )
+                }
+            dataEntryList
+        }
     }
 
     override suspend fun deleteOldData(currentTimeStamp: Long): Int {

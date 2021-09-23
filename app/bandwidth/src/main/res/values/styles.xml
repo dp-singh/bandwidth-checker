@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.App.Button.Download" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="iconTint">@color/color_download</item>
+        <item name="android:textColor">@color/color_download</item>
+    </style>
+
+    <style name="Widget.App.Button.Upload" parent="Widget.MaterialComponents.Button.OutlinedButton.Icon">
+        <item name="iconTint">@color/color_upload</item>
+        <item name="android:textColor">@color/color_upload</item>
+    </style>
+</resources>

@@ -55,7 +55,8 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_upload_speed_value"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Widget.App.Button.Download"
+                tools:text="@tools:sample/lorem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_16dp"
@@ -92,7 +93,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_download_speed_value"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                style="@style/Widget.App.Button.Upload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
@@ -126,11 +127,14 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_network_condition_value"
-                style="@style/Widget.MaterialComponents.Button"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:gravity="start"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
                 app:layout_constraintBottom_toBottomOf="@id/tv_network_condition_label"
                 app:layout_constraintStart_toStartOf="@id/btn_download_speed_value"
                 app:layout_constraintTop_toTopOf="@id/tv_network_condition_label"

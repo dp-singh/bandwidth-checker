@@ -15,6 +15,7 @@ import com.donadonation.bandwidth.extension.toMbps
 import com.donadonation.bandwidth.local.Report
 import com.donadonation.bandwidth.repository.BandwidthRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -110,15 +111,16 @@ class BandwidthViewModel constructor(private val repository: BandwidthRepository
     }
 
 
-    fun prepareChartData() {
+    private fun prepareChartData() {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
+            delay(1000L)
             val metricReport: List<Report> = getReport()
             val dataEntryList: List<DataEntry> = repository.getChartData(metricReport)
             if (dataEntryList.isNotEmpty()) {
-                _viewState.postValue(ViewState.UpdateView(dataEntryList))
+                _viewState.value = ViewState.UpdateView(dataEntryList)
             } else {
-                _viewState.postValue(ViewState.EmptyView)
+                _viewState.value = ViewState.EmptyView
             }
         }
     }
