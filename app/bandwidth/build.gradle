@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'maven-publish'
 }
 
 android {
@@ -93,4 +94,20 @@ dependencies {
     //Any chart
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
 
+}
+task androidSourcesJar(type: Jar) {
+    classifier 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+    if (!plugins.hasPlugin("android")) {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    from components.release
+                }
+            }
+        }
+    }
 }
