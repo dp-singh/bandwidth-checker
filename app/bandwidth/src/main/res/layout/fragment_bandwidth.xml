@@ -16,8 +16,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".ui.BandwidthActivity">
+            android:layout_height="match_parent">
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 style="@style/Widget.MaterialComponents.CircularProgressIndicator"
